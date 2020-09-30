@@ -48,11 +48,24 @@ int main(int argc, char **argv)
     const int nImages = vstrImageLeft.size();
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::STEREO,true);
+    ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::STEREO,false);
 
     // Vector for tracking time statistics
     vector<float> vTimesTrack;
     vTimesTrack.resize(nImages);
+
+    // JOE MODIFICATION: TRACKING STATE AND # FEATURES TRACKED:
+    vector<int> numPointsTracked;
+    numPointsTracked.resize(nImages);
+
+    vector<int> systemStates;
+    systemStates.resize(nImages);
+
+    vector<double> inlierRatios;
+    inlierRatios.resize(nImages);
+
+    vector<double> averageLoss;
+    averageLoss.resize(nImages);
 
     cout << endl << "-------" << endl;
     cout << "Start processing sequence ..." << endl;
@@ -102,6 +115,15 @@ int main(int argc, char **argv)
 
         if(ttrack<T)
             usleep((T-ttrack)*1e6);
+
+        //modifications for additional data:
+        int currentState = SLAM.GetTrackingState();
+        systemStates[ni] = currentState;
+
+        numPointsTracked[ni] = SLAM.GetTrackedPointsOpt();
+        inlierRatios[ni] = SLAM.GetInlierRatio();
+
+        averageLoss[ni] = SLAM.GetAverageLoss();
     }
 
     // Stop all threads
@@ -120,6 +142,31 @@ int main(int argc, char **argv)
 
     // Save camera trajectory
     SLAM.SaveTrajectoryKITTI("CameraTrajectory.txt");
+
+    //Save other metrics:
+    ofstream statfile;
+    statfile.open("nTrackedPoints.txt");
+    for(int ii=0;ii<nImages;ii++){
+        statfile << numPointsTracked[ii] << endl;
+    }
+    statfile.close();
+    statfile.open("trackingStates.txt");
+    for(int ii=0;ii<nImages;ii++){
+        statfile << systemStates[ii] << endl;
+    }
+    statfile.close();
+
+    statfile.open("inlierRatios.txt");
+    for(int ii=0;ii<nImages;ii++){
+        statfile << inlierRatios[ii] << endl;
+    }
+    statfile.close();
+
+    statfile.open("averageLoss.txt");
+    for(int ii=0;ii<nImages;ii++){
+        statfile << averageLoss[ii] << endl;
+    }
+    statfile.close();
 
     return 0;
 }

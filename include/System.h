@@ -179,6 +179,11 @@ public:
 
     //void SaveAtlas(int type);
 
+    //Modification:
+    int GetTrackedPointsOpt();
+    double GetInlierRatio();
+    double GetAverageLoss();
+
 private:
 
     //bool LoadAtlas(string filename, int type);
@@ -237,6 +242,10 @@ private:
     std::vector<MapPoint*> mTrackedMapPoints;
     std::vector<cv::KeyPoint> mTrackedKeyPointsUn;
     std::mutex mMutexState;
+    //modification:
+    int mTrackedPointsOpt;
+    double mInlierRatio;
+    double mAverageLoss;
 };
 
 }// namespace ORB_SLAM

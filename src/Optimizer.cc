@@ -1163,7 +1163,24 @@ int Optimizer::PoseOptimization(Frame *pFrame)
     pFrame->SetPose(pose);
 
     //cout << "[PoseOptimization]: initial correspondences-> " << nInitialCorrespondences << " --- outliers-> " << nBad << endl;
+    pFrame->inlierRatio = ((double)(nInitialCorrespondences-nBad))/nInitialCorrespondences;
+    //Compute Average Loss after all steps:
+    double avgChi2 = 0;
+    int nInlier = 0;
+    for(size_t i=0, iend=vpEdgesStereo.size(); i<iend; i++)
+    {
+        g2o::EdgeStereoSE3ProjectXYZOnlyPose* e = vpEdgesStereo[i];
 
+        const size_t idx = vnIndexEdgeStereo[i];
+
+        if(!pFrame->mvbOutlier[idx])
+        {
+            e->computeError();
+            avgChi2 += e->chi2();
+            nInlier++;
+        }
+    }
+    pFrame->avgLoss = avgChi2/nInlier;
     return nInitialCorrespondences-nBad;
 }
 
@@ -5910,6 +5927,9 @@ void Optimizer::InertialOptimization(Map *pMap, Eigen::Matrix3d &Rwg, double &sc
 
 void Optimizer::MergeBundleAdjustmentVisual(KeyFrame* pCurrentKF, vector<KeyFrame*> vpWeldingKFs, vector<KeyFrame*> vpFixedKFs, bool *pbStopFlag)
 {
+
+    cout << "Attempting to Merge Maps" << endl;
+    
     vector<MapPoint*> vpMPs;
 
     g2o::SparseOptimizer optimizer;

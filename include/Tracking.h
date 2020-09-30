@@ -153,6 +153,10 @@ public:
 
     vector<MapPoint*> GetLocalMapMPS();
 
+    //Matches From Optimization:
+    int mPointsOpt;
+    double averageLoss;
+    double inlierRatio;
 
     //TEST--
     cv::Mat M1l, M2l;

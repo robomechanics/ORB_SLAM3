@@ -250,7 +250,9 @@ public:
     double mTimeStereoMatch;
     double mTimeORB_Ext;
 
-
+    //Modification:
+    double avgLoss;
+    double inlierRatio;
 private:
 
     // Undistort keypoints given OpenCV distortion parameters.
