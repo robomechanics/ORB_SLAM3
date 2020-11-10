@@ -1164,6 +1164,10 @@ int Optimizer::PoseOptimization(Frame *pFrame)
 
     //cout << "[PoseOptimization]: initial correspondences-> " << nInitialCorrespondences << " --- outliers-> " << nBad << endl;
     pFrame->inlierRatio = ((double)(nInitialCorrespondences-nBad))/nInitialCorrespondences;
+
+    //vectors for collecting x/y data:
+    vector<float> xposes;
+    vector<float> yposes;
     //Compute Average Loss after all steps:
     double avgChi2 = 0;
     int nInlier = 0;
@@ -1178,9 +1182,14 @@ int Optimizer::PoseOptimization(Frame *pFrame)
             e->computeError();
             avgChi2 += e->chi2();
             nInlier++;
+            Eigen::Matrix<double,3,1> obs = e->measurement();
+            xposes.push_back(obs(0));
+            yposes.push_back(obs(1));
         }
     }
     pFrame->avgLoss = avgChi2/nInlier;
+    pFrame->featurePosX = xposes;
+    pFrame->featurePosY = yposes;
     return nInitialCorrespondences-nBad;
 }
 

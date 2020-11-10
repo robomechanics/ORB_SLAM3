@@ -2018,6 +2018,8 @@ bool Tracking::TrackLocalMap()
     mPointsOpt = inliers;
     inlierRatio = mCurrentFrame.inlierRatio;
     averageLoss = mCurrentFrame.avgLoss;
+    featuresXCoords = mCurrentFrame.featurePosX;
+    featuresYCoords = mCurrentFrame.featurePosY;
 
     aux1 = 0, aux2 = 0;
     for(int i=0; i<mCurrentFrame.N; i++)

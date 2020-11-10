@@ -286,6 +286,8 @@ cv::Mat System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const
     mTrackedPointsOpt = mpTracker->mPointsOpt;
     mInlierRatio = mpTracker->inlierRatio;
     mAverageLoss = mpTracker->averageLoss;
+    xCoords = mpTracker->featuresXCoords;
+    yCoords = mpTracker->featuresYCoords;
 
     return Tcw;
 }
@@ -898,6 +900,16 @@ double System::GetAverageLoss()
 {
     unique_lock<mutex> lock(mMutexState);
     return mAverageLoss;
+}
+vector<float> System::GetXCoords()
+{
+    unique_lock<mutex> lock(mMutexState);
+    return xCoords;
+}
+vector<float> System::GetYCoords()
+{
+    unique_lock<mutex> lock(mMutexState);
+    return yCoords;
 }
 
 vector<MapPoint*> System::GetTrackedMapPoints()

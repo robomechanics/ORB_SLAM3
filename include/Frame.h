@@ -253,6 +253,9 @@ public:
     //Modification:
     double avgLoss;
     double inlierRatio;
+
+    vector<float> featurePosX;
+    vector<float> featurePosY;
 private:
 
     // Undistort keypoints given OpenCV distortion parameters.

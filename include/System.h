@@ -183,6 +183,8 @@ public:
     int GetTrackedPointsOpt();
     double GetInlierRatio();
     double GetAverageLoss();
+    vector<float> GetXCoords();
+    vector<float> GetYCoords();
 
 private:
 
@@ -246,6 +248,8 @@ private:
     int mTrackedPointsOpt;
     double mInlierRatio;
     double mAverageLoss;
+    vector<float> xCoords;
+    vector<float> yCoords;
 };
 
 }// namespace ORB_SLAM

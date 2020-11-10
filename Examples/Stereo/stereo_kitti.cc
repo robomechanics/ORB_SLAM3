@@ -67,6 +67,11 @@ int main(int argc, char **argv)
     vector<double> averageLoss;
     averageLoss.resize(nImages);
 
+    // Adding info about the image coordinates of features by frame:
+    vector<float> featuresXCoords;
+    vector<float> featuresYCoords;
+
+
     cout << endl << "-------" << endl;
     cout << "Start processing sequence ..." << endl;
     cout << "Images in the sequence: " << nImages << endl << endl;   
@@ -124,6 +129,19 @@ int main(int argc, char **argv)
         inlierRatios[ni] = SLAM.GetInlierRatio();
 
         averageLoss[ni] = SLAM.GetAverageLoss();
+        if(ni>0){
+            // GET X/Y Coords for the current step:
+            featuresXCoords = SLAM.GetXCoords();
+            featuresYCoords = SLAM.GetYCoords();
+
+            // Output the current x/y coords
+            ofstream statfile;
+            statfile.open("featureLocations" + to_string(ni) + ".txt");
+            for(int ii=0;ii<featuresXCoords.size();ii++){
+                statfile << featuresXCoords[ii] << "," << featuresYCoords[ii] << endl;
+            }
+            statfile.close();
+        }
     }
 
     // Stop all threads

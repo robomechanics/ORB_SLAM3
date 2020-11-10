@@ -158,6 +158,9 @@ public:
     double averageLoss;
     double inlierRatio;
 
+    vector<float> featuresXCoords;
+    vector<float> featuresYCoords;
+
     //TEST--
     cv::Mat M1l, M2l;
     cv::Mat M1r, M2r;
