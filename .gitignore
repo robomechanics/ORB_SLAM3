@@ -1,7 +1,7 @@
 CMakeLists.txt.user
 CMakeLists_modified.txt
 
-FeatureLocs/*
+output/*
 
 Examples/RGB-D/rgbd_tum
 
