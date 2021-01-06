@@ -2,6 +2,7 @@ CMakeLists.txt.user
 CMakeLists_modified.txt
 
 output/*
+scripts/*.txt
 
 Examples/RGB-D/rgbd_tum
 
