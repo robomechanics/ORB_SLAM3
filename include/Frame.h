@@ -256,6 +256,7 @@ public:
 
     vector<float> featurePosX;
     vector<float> featurePosY;
+    vector<float> featurePosZ;
 private:
 
     // Undistort keypoints given OpenCV distortion parameters.

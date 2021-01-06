@@ -70,6 +70,7 @@ int main(int argc, char **argv)
     // Adding info about the image coordinates of features by frame:
     vector<float> featuresXCoords;
     vector<float> featuresYCoords;
+    vector<float> featuresZCoords;
 
 
     cout << endl << "-------" << endl;
@@ -133,12 +134,13 @@ int main(int argc, char **argv)
             // GET X/Y Coords for the current step:
             featuresXCoords = SLAM.GetXCoords();
             featuresYCoords = SLAM.GetYCoords();
+            featuresZCoords = SLAM.GetZCoords();
 
             // Output the current x/y coords
             ofstream statfile;
             statfile.open("featureLocations" + to_string(ni) + ".txt");
             for(int ii=0;ii<featuresXCoords.size();ii++){
-                statfile << featuresXCoords[ii] << "," << featuresYCoords[ii] << endl;
+                statfile << featuresXCoords[ii] << "," << featuresYCoords[ii] << "," << featuresZCoords[ii] << endl;
             }
             statfile.close();
         }

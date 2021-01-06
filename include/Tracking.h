@@ -160,6 +160,7 @@ public:
 
     vector<float> featuresXCoords;
     vector<float> featuresYCoords;
+    vector<float> featuresZCoords;
 
     //TEST--
     cv::Mat M1l, M2l;

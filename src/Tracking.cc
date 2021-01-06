@@ -2020,6 +2020,7 @@ bool Tracking::TrackLocalMap()
     averageLoss = mCurrentFrame.avgLoss;
     featuresXCoords = mCurrentFrame.featurePosX;
     featuresYCoords = mCurrentFrame.featurePosY;
+    featuresZCoords = mCurrentFrame.featurePosZ;
 
     aux1 = 0, aux2 = 0;
     for(int i=0; i<mCurrentFrame.N; i++)

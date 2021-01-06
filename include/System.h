@@ -185,6 +185,7 @@ public:
     double GetAverageLoss();
     vector<float> GetXCoords();
     vector<float> GetYCoords();
+    vector<float> GetZCoords();
 
 private:
 
@@ -250,6 +251,7 @@ private:
     double mAverageLoss;
     vector<float> xCoords;
     vector<float> yCoords;
+    vector<float> zCoords;
 };
 
 }// namespace ORB_SLAM
