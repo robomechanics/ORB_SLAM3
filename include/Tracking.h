@@ -158,6 +158,9 @@ public:
     double averageLoss;
     double inlierRatio;
 
+    int nStereoPoints;
+    int nCloseStereoPoints;
+
     vector<float> featuresXCoords;
     vector<float> featuresYCoords;
     vector<float> featuresZCoords;

@@ -917,6 +917,23 @@ vector<float> System::GetZCoords()
     unique_lock<mutex> lock(mMutexState);
     return zCoords;
 }
+long unsigned int System::MapPointsInMap()
+{
+    unique_lock<mutex> lock(mMutexState);
+    return mpAtlas->MapPointsInMap();
+}
+
+int System::GetNCloseStereoPoints()
+{
+    unique_lock<mutex> lock(mMutexState);
+    return mpTracker->nCloseStereoPoints;
+}
+
+int System::GetNStereoPoints()
+{
+    unique_lock<mutex> lock(mMutexState);
+    return mpTracker->nStereoPoints;
+}
 
 vector<MapPoint*> System::GetTrackedMapPoints()
 {
@@ -970,6 +987,11 @@ void System::ChangeDataset()
     }
 
     mpTracker->NewDataset();
+}
+
+std::vector<std::vector<int>> System::GetCovisibility()
+{
+    return mpAtlas->GetCovisibility();
 }
 
 /*void System::SaveAtlas(int type){

@@ -136,6 +136,9 @@ public:
 
     long unsigned int GetNumLivedMP();
 
+    //Modified for debug/test:
+    std::vector<std::vector<int>> GetCovisibility();
+
 protected:
 
     std::set<Map*> mspMaps;

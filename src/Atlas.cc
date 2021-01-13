@@ -376,4 +376,20 @@ long unsigned int Atlas::GetNumLivedMP() {
     return num;
 }
 
+std::vector<std::vector<int>> Atlas::GetCovisibility(){
+    std::vector<Map*> maps = GetAllMaps();
+    std::vector<KeyFrame*> kfs;
+    for(int i=0;i<maps.size();i++){
+        std::vector<KeyFrame*> newkfs = maps[i]->GetAllKeyFrames();
+        kfs.insert(kfs.end(),newkfs.begin(),newkfs.end());
+    }
+    std::vector<std::vector<int>> covisibility(kfs.size(),std::vector<int>(kfs.size()));
+    for(int i=0;i<kfs.size();i++){
+        for(int j=0; j<kfs.size();j++){
+            covisibility[i][j]=kfs[i]->GetWeight(kfs[j]);
+        }
+    }
+    return covisibility;
+}
+
 } //namespace ORB_SLAM3

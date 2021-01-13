@@ -186,6 +186,11 @@ public:
     vector<float> GetXCoords();
     vector<float> GetYCoords();
     vector<float> GetZCoords();
+    long unsigned int MapPointsInMap();
+    int GetNStereoPoints();
+    int GetNCloseStereoPoints();
+
+    std::vector<std::vector<int>> GetCovisibility();
 
 private:
 

@@ -967,16 +967,31 @@ void Frame::ComputeStereoMatches()
     const float median = vDistIdx[vDistIdx.size()/2].first;
     const float thDist = 1.5f*1.4f*median;
 
+    // Adding modifications here to track ratio of features with good depth
+    int numStereoMatches = vDistIdx.size();
+    int numCloseMatches = 0;
+    // std::cout<< "We are at least running this code" << endl;
+    // std::cout<< "The number of Stereo Matches is: " << vDistIdx.size() << endl;
     for(int i=vDistIdx.size()-1;i>=0;i--)
     {
-        if(vDistIdx[i].first<thDist)
+        // std::cout << "Dist: " << vDistIdx[i].first << " ORB Threshold: " << thDist << " Baseline Thresh: " << mThDepth << endl;
+        if(mvDepth[vDistIdx[i].second]<mThDepth){
+           numCloseMatches++;
+           // std::cout << "There are close points" << endl; 
+        } 
+
+        if(vDistIdx[i].first<thDist){
+            // std::cout << "There are close points according to ORB" << endl;
             break;
+        }
         else
         {
             mvuRight[vDistIdx[i].second]=-1;
             mvDepth[vDistIdx[i].second]=-1;
         }
     }
+    nStereoPoints = numStereoMatches;
+    nCloseStereoPoints = numCloseMatches;
 }
 
 

@@ -67,6 +67,14 @@ int main(int argc, char **argv)
     vector<double> averageLoss;
     averageLoss.resize(nImages);
 
+    vector<long unsigned int> nMapPoints;
+    nMapPoints.resize(nImages);
+
+    vector<int> nStereoPoints;
+    nStereoPoints.resize(nImages);
+    vector<int> nCloseStereoPoints;
+    nCloseStereoPoints.resize(nImages);
+
     // Adding info about the image coordinates of features by frame:
     vector<float> featuresXCoords;
     vector<float> featuresYCoords;
@@ -128,8 +136,10 @@ int main(int argc, char **argv)
 
         numPointsTracked[ni] = SLAM.GetTrackedPointsOpt();
         inlierRatios[ni] = SLAM.GetInlierRatio();
-
         averageLoss[ni] = SLAM.GetAverageLoss();
+        nMapPoints[ni] = SLAM.MapPointsInMap();
+        nCloseStereoPoints[ni] = SLAM.GetNCloseStereoPoints();
+        nStereoPoints[ni] = SLAM.GetNStereoPoints();
         if(ni>0){
             // GET X/Y Coords for the current step:
             featuresXCoords = SLAM.GetXCoords();
@@ -137,12 +147,12 @@ int main(int argc, char **argv)
             featuresZCoords = SLAM.GetZCoords();
 
             // Output the current x/y coords
-            ofstream statfile;
-            statfile.open("featureLocations" + to_string(ni) + ".txt");
-            for(int ii=0;ii<featuresXCoords.size();ii++){
-                statfile << featuresXCoords[ii] << "," << featuresYCoords[ii] << "," << featuresZCoords[ii] << endl;
-            }
-            statfile.close();
+            // ofstream statfile;
+            // statfile.open("featureLocations" + to_string(ni) + ".txt");
+            // for(int ii=0;ii<featuresXCoords.size();ii++){
+            //     statfile << featuresXCoords[ii] << "," << featuresYCoords[ii] << "," << featuresZCoords[ii] << endl;
+            // }
+            // statfile.close();
         }
     }
 
@@ -185,6 +195,35 @@ int main(int argc, char **argv)
     statfile.open("averageLoss.txt");
     for(int ii=0;ii<nImages;ii++){
         statfile << averageLoss[ii] << endl;
+    }
+    statfile.close();
+
+    statfile.open("nMapPoints.txt");
+    for(int ii=0;ii<nImages;ii++){
+        statfile << nMapPoints[ii] << endl;
+    }
+    statfile.close();
+
+    statfile.open("nStereoPoints.txt");
+    for(int ii=0;ii<nImages;ii++){
+        statfile << nStereoPoints[ii] << endl;
+    }
+    statfile.close();
+
+    statfile.open("nCloseStereoPoints.txt");
+    for(int ii=0;ii<nImages;ii++){
+        statfile << nCloseStereoPoints[ii] << endl;
+    }
+    statfile.close();
+
+    // Covisibility Graph Stuff:
+    std::vector<std::vector<int>> covisibility = SLAM.GetCovisibility();
+    statfile.open("covisibility.txt");
+    for(int ii=0;ii<covisibility.size();ii++){
+        for(int jj=0;jj<covisibility.size();jj++){
+            statfile << covisibility[ii][jj] <<",";
+        }
+        statfile << endl;
     }
     statfile.close();
 
