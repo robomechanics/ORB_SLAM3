@@ -989,9 +989,14 @@ void System::ChangeDataset()
     mpTracker->NewDataset();
 }
 
-std::vector<std::vector<int>> System::GetCovisibility()
+std::vector<int> System::GetCovisibility(int size)
 {
-    return mpAtlas->GetCovisibility();
+    std::vector<int> covisibility(size,0);
+    std::vector<KeyFrame* > kfs = mpTracker->mCurrentFrame.mpReferenceKF->GetVectorCovisibleKeyFrames();
+    for(int i=0;i<kfs.size();i++){
+        covisibility[kfs[i]->mnId] = 1;
+    }
+    return covisibility;
 }
 
 /*void System::SaveAtlas(int type){

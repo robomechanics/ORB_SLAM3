@@ -190,7 +190,7 @@ public:
     int GetNStereoPoints();
     int GetNCloseStereoPoints();
 
-    std::vector<std::vector<int>> GetCovisibility();
+    std::vector<int> GetCovisibility(int size);
 
 private:
 

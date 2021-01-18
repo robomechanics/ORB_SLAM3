@@ -137,7 +137,7 @@ public:
     long unsigned int GetNumLivedMP();
 
     //Modified for debug/test:
-    std::vector<std::vector<int>> GetCovisibility();
+    // std::vector<int> GetCovisibility();
 
 protected:
 

@@ -80,6 +80,9 @@ int main(int argc, char **argv)
     vector<float> featuresYCoords;
     vector<float> featuresZCoords;
 
+    // Covisibility Graph Tracking:
+    std::vector<std::vector<int>> covisibility(nImages,std::vector<int>(nImages));
+
 
     cout << endl << "-------" << endl;
     cout << "Start processing sequence ..." << endl;
@@ -140,6 +143,7 @@ int main(int argc, char **argv)
         nMapPoints[ni] = SLAM.MapPointsInMap();
         nCloseStereoPoints[ni] = SLAM.GetNCloseStereoPoints();
         nStereoPoints[ni] = SLAM.GetNStereoPoints();
+        covisibility[ni] = SLAM.GetCovisibility(nImages);
         if(ni>0){
             // GET X/Y Coords for the current step:
             featuresXCoords = SLAM.GetXCoords();
@@ -217,7 +221,7 @@ int main(int argc, char **argv)
     statfile.close();
 
     // Covisibility Graph Stuff:
-    std::vector<std::vector<int>> covisibility = SLAM.GetCovisibility();
+    // std::vector<std::vector<int>> covisibility = SLAM.GetCovisibility();
     statfile.open("covisibility.txt");
     for(int ii=0;ii<covisibility.size();ii++){
         for(int jj=0;jj<covisibility.size();jj++){
