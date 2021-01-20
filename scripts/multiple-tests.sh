@@ -3,7 +3,7 @@
 ### This script is meant to run ORB SLAM 3 on the "longer run" dataset multiple 
 ### times and collect a variety of output from it into the designated folders.
 ### The version of the RML ORB SLAM fork that should be used with this is xxxxxx
-input="../magnitudes2.txt"
+input="../magnitudesLimited.txt"
 for i in {1..100}
 do
 	while read line
