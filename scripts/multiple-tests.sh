@@ -3,7 +3,7 @@
 ### This script is meant to run ORB SLAM 3 on the "longer run" dataset multiple 
 ### times and collect a variety of output from it into the designated folders.
 ### The version of the RML ORB SLAM fork that should be used with this is xxxxxx
-input="../magnitudesLimited.txt"
+input="../magnitudes2.txt"
 for i in {1..100}
 do
 	while read line
@@ -42,11 +42,6 @@ do
 
 		mkdir --parents /media/joe/5056599056597824/ORBSlam3Recordings/Multi-Test/$line/nCloseStereoPoints/
 		mv nCloseStereoPoints.txt "/media/joe/5056599056597824/ORBSlam3Recordings/Multi-Test/$line/nCloseStereoPoints/nCloseStereoPoints$i.txt"
-
-		# Number of re-extractions to successfully complete ORB estimation
-		mkdir --parents /media/joe/5056599056597824/ORBSlam3Recordings/Multi-Test/$line/nReExtractions/
-		mv reExtractions.txt "/media/joe/5056599056597824/ORBSlam3Recordings/Multi-Test/$line/nReExtractions/nReExtractions$i.txt"
-
 
 	done < ../magnitudes2.txt
 done
