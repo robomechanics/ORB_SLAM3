@@ -43,6 +43,10 @@ do
 		mkdir --parents /media/joe/5056599056597824/ORBSlam3Recordings/Multi-Test/$line/nCloseStereoPoints/
 		mv nCloseStereoPoints.txt "/media/joe/5056599056597824/ORBSlam3Recordings/Multi-Test/$line/nCloseStereoPoints/nCloseStereoPoints$i.txt"
 
+		# Number of re-extractions to successfully complete ORB estimation
+		mkdir --parents /media/joe/5056599056597824/ORBSlam3Recordings/Multi-Test/$line/nReExtractions/
+		mv reExtractions.txt "/media/joe/5056599056597824/ORBSlam3Recordings/Multi-Test/$line/nReExtractions/nReExtractions$i.txt"
+
 
 	done < ../magnitudes2.txt
 done
