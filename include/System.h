@@ -191,6 +191,7 @@ public:
     int GetNCloseStereoPoints();
 
     std::vector<int> GetCovisibility(int size);
+    int GetNumResets();
 
 private:
 

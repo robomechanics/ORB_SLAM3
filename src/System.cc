@@ -991,12 +991,33 @@ void System::ChangeDataset()
 
 std::vector<int> System::GetCovisibility(int size)
 {
+    unique_lock<mutex> lock(mMutexState);
     std::vector<int> covisibility(size,0);
-    std::vector<KeyFrame* > kfs = mpTracker->mCurrentFrame.mpReferenceKF->GetVectorCovisibleKeyFrames();
+    std::vector<KeyFrame* > kfs;
+    if(!mpTracker){
+        std::cout << "tracker not initialized" << endl;
+        return covisibility;
+    }
+    if(!mpTracker->mCurrentFrame.mpReferenceKF){
+        std::cout << "frame not initialized" << endl;
+        return covisibility;
+    }
+    kfs = mpTracker->mCurrentFrame.mpReferenceKF->GetVectorCovisibleKeyFrames();
+
     for(int i=0;i<kfs.size();i++){
-        covisibility[kfs[i]->mnId] = 1;
+        if(kfs[i]->mnId >= 100){
+            std::cout << "The Keyframe ID is too high and it is: " << kfs[i]->mnId << endl;
+        }
+        else{   
+            covisibility[kfs[i]->mnId] = 1;    
+        }
     }
     return covisibility;
+}
+
+int System::GetNumResets()
+{
+    return mpTracker->numResets;
 }
 
 /*void System::SaveAtlas(int type){

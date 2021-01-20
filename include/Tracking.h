@@ -119,6 +119,10 @@ public:
     Frame mLastFrame;
 
     cv::Mat mImGray;
+    //Adding for re-extraction
+    cv::Mat imGrayRight;
+    double currentTimestamp;
+    int numResets;
 
     // Initialization Variables (Monocular)
     std::vector<int> mvIniLastMatches;

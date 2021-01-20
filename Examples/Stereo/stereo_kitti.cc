@@ -231,6 +231,11 @@ int main(int argc, char **argv)
     }
     statfile.close();
 
+    // Number of times the system had to re-extract ORB features to properly work:
+    statfile.open("reExtractions.txt");
+    statfile << SLAM.GetNumResets() << endl;
+    statfile.close();
+
     return 0;
 }
 

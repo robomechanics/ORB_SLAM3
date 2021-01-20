@@ -303,6 +303,9 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
 
     mnNumDataset = 0;
 
+    //Tracking the number of times the ORB had to be re-extracted
+    numResets = 0;
+
     //f_track_stats.open("tracking_stats"+ _nameSeq + ".txt");
     /*f_track_stats.open("tracking_stats.txt");
     f_track_stats << "# timestamp, Num KF local, Num MP local, time" << endl;
@@ -348,8 +351,9 @@ void Tracking::SetStepByStep(bool bSet)
 cv::Mat Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat &imRectRight, const double &timestamp, string filename)
 {
     mImGray = imRectLeft;
-    cv::Mat imGrayRight = imRectRight;
+    imGrayRight = imRectRight;
     mImRight = imRectRight;
+    currentTimestamp = timestamp;
 
     if(mImGray.channels()==3)
     {
@@ -981,18 +985,30 @@ void Tracking::Track()
                 // Local Mapping might have changed some MapPoints tracked in last frame
                 CheckReplacedInLastFrame();
 
-                if((mVelocity.empty() && !pCurrentMap->isImuInitialized()) || mCurrentFrame.mnId<mnLastRelocFrameId+2)
-                {
-                    //Verbose::PrintMess("TRACK: Track with respect to the reference KF ", Verbose::VERBOSITY_DEBUG);
-                    bOK = TrackReferenceKeyFrame();
-                }
-                else
-                {
-                    //Verbose::PrintMess("TRACK: Track with motion model", Verbose::VERBOSITY_DEBUG);
-                    bOK = TrackWithMotionModel();
-                    if(!bOK)
+                //Re-extract ORB data and re-run if not okay
+                bOK = false;
+                int numReExtracts = 0;
+                while(!bOK && numReExtracts <101){
+                    if(numReExtracts >0){
+                        std::cout << "Attempting to re-extract. Attempt #" << numReExtracts << endl;
+                        mCurrentFrame = Frame(mImGray,imGrayRight,currentTimestamp,mpORBextractorLeft,mpORBextractorRight,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth,mpCamera);
+                    }
+                    if((mVelocity.empty() && !pCurrentMap->isImuInitialized()) || mCurrentFrame.mnId<mnLastRelocFrameId+2)
+                    {
+                        //Verbose::PrintMess("TRACK: Track with respect to the reference KF ", Verbose::VERBOSITY_DEBUG);
                         bOK = TrackReferenceKeyFrame();
+                    }
+                    else
+                    {
+                        //Verbose::PrintMess("TRACK: Track with motion model", Verbose::VERBOSITY_DEBUG);
+                        bOK = TrackWithMotionModel();
+                        if(!bOK)
+                            bOK = TrackReferenceKeyFrame();
+                    }
+                    numReExtracts++;  
                 }
+                numResets+= numReExtracts - 1;
+                
 
 
                 if (!bOK)
