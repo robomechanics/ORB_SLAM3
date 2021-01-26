@@ -11,7 +11,7 @@ do
 		# This is simply for feedback to know how far into the script we are
 		echo "$i test $line"
 		# Calling ORB-SLAM-3 On the desired dataset
-		./../Examples/Stereo/stereo_kitti ../Vocabulary/ORBvoc.txt ../Examples/Stereo/AirSim5xFeatures.yaml /media/joe/5056599056597824/AirSimResults/PitchMagnitudeLongerRun/$line
+		./../Examples/Stereo/stereo_kitti ../Vocabulary/ORBvoc.txt ../Examples/Stereo/AirSim-5xFeatures.yaml /media/joe/5056599056597824/AirSimResults/PitchMagnitudeLongerRun/$line
 		# Moving the output files to the appropriate location (Make sure to back them up to box)
 		#Trajectories
 		mkdir --parents /media/joe/5056599056597824/ORBSlam3Recordings/retrial-vs-extra-features/5x-features/$line/trajectories/
