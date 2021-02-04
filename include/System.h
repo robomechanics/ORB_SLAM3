@@ -193,6 +193,11 @@ public:
     std::vector<int> GetCovisibility(int size);
     int GetNumResets();
 
+    //For saving/loading frame objects
+    std::vector<Frame*> framePointers;
+    int runNumber;
+    int frameNumber;
+
 private:
 
     //bool LoadAtlas(string filename, int type);
