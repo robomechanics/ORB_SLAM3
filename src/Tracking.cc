@@ -383,7 +383,7 @@ cv::Mat Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat &imRe
     }
 
     if (mSensor == System::STEREO && !mpCamera2){
-        if(mpSystem->runNumber == 0){
+        if(mpSystem->runNumber == 1){
             mCurrentFrame = Frame(mImGray,imGrayRight,timestamp,mpORBextractorLeft,mpORBextractorRight,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth,mpCamera);
             Frame* frameptr = new Frame;
             *frameptr = Frame(mCurrentFrame);

@@ -48,13 +48,14 @@ int main(int argc, char **argv)
     // Storage for frames
     vector<ORB_SLAM3::Frame*> frames;
     frames.resize(nImages);
-    for(int ii=0; ii < 2; ii++){
+    for(int ii=1; ii < 101; ii++){
         // Create SLAM system. It initializes all system threads and gets ready to process frames.
-        ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::STEREO,false);
-        SLAM.runNumber = ii;
-        if(ii == 0) SLAM.framePointers.resize(nImages);
-        if(ii > 0) SLAM.framePointers = frames;
-        SLAM.frameNumber = 0;
+        cout << "Iteration Number: " << ii << endl;
+        ORB_SLAM3::System* SLAM = new ORB_SLAM3::System(argv[1],argv[2],ORB_SLAM3::System::STEREO,false);
+        SLAM->runNumber = ii;
+        if(ii == 1) SLAM->framePointers.resize(nImages);
+        if(ii > 1) SLAM->framePointers = frames;
+        SLAM->frameNumber = 0;
 
         // Vector for tracking time statistics
         vector<float> vTimesTrack;
@@ -114,9 +115,9 @@ int main(int argc, char **argv)
     #else
             std::chrono::monotonic_clock::time_point t1 = std::chrono::monotonic_clock::now();
     #endif
-
+            
             // Pass the images to the SLAM system
-            SLAM.TrackStereo(imLeft,imRight,tframe);
+            SLAM->TrackStereo(imLeft,imRight,tframe);
 
     #ifdef COMPILEDWITHC11
             std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
@@ -139,21 +140,21 @@ int main(int argc, char **argv)
                 usleep((T-ttrack)*1e6);
 
             //modifications for additional data:
-            int currentState = SLAM.GetTrackingState();
+            int currentState = SLAM->GetTrackingState();
             systemStates[ni] = currentState;
 
-            numPointsTracked[ni] = SLAM.GetTrackedPointsOpt();
-            inlierRatios[ni] = SLAM.GetInlierRatio();
-            averageLoss[ni] = SLAM.GetAverageLoss();
-            nMapPoints[ni] = SLAM.MapPointsInMap();
-            nCloseStereoPoints[ni] = SLAM.GetNCloseStereoPoints();
-            nStereoPoints[ni] = SLAM.GetNStereoPoints();
-            covisibility[ni] = SLAM.GetCovisibility(nImages);
+            numPointsTracked[ni] = SLAM->GetTrackedPointsOpt();
+            inlierRatios[ni] = SLAM->GetInlierRatio();
+            averageLoss[ni] = SLAM->GetAverageLoss();
+            nMapPoints[ni] = SLAM->MapPointsInMap();
+            nCloseStereoPoints[ni] = SLAM->GetNCloseStereoPoints();
+            nStereoPoints[ni] = SLAM->GetNStereoPoints();
+            covisibility[ni] = SLAM->GetCovisibility(nImages);
             if(ni>0){
                 // GET X/Y Coords for the current step:
-                featuresXCoords = SLAM.GetXCoords();
-                featuresYCoords = SLAM.GetYCoords();
-                featuresZCoords = SLAM.GetZCoords();
+                featuresXCoords = SLAM->GetXCoords();
+                featuresYCoords = SLAM->GetYCoords();
+                featuresZCoords = SLAM->GetZCoords();
 
                 // Output the current x/y coords
                 // ofstream statfile;
@@ -164,9 +165,9 @@ int main(int argc, char **argv)
                 // statfile.close();
             }
         }
-        if(ii == 0) frames = SLAM.framePointers;
+        if(ii == 1) frames = SLAM->framePointers;
         // Stop all threads
-        SLAM.Shutdown();
+        SLAM->Shutdown();
 
         // Tracking time statistics
         sort(vTimesTrack.begin(),vTimesTrack.end());
@@ -180,72 +181,74 @@ int main(int argc, char **argv)
         cout << "mean tracking time: " << totaltime/nImages << endl;
 
         // Save camera trajectory
-        SLAM.SaveTrajectoryKITTI("CameraTrajectory.txt");
+        SLAM->SaveTrajectoryKITTI("CameraTrajectory" + to_string(ii) + ".txt");
 
         //Save other metrics:
         ofstream statfile;
-        statfile.open("nTrackedPoints.txt");
-        for(int ii=0;ii<nImages;ii++){
-            statfile << numPointsTracked[ii] << endl;
+        statfile.open("nTrackedPoints" + to_string(ii) + ".txt");
+        for(int iii=0;iii<nImages;iii++){
+            statfile << numPointsTracked[iii] << endl;
         }
         statfile.close();
-        statfile.open("trackingStates.txt");
-        for(int ii=0;ii<nImages;ii++){
-            statfile << systemStates[ii] << endl;
-        }
-        statfile.close();
-
-        statfile.open("inlierRatios.txt");
-        for(int ii=0;ii<nImages;ii++){
-            statfile << inlierRatios[ii] << endl;
+        statfile.open("trackingStates" + to_string(ii) + ".txt");
+        for(int iii=0;iii<nImages;iii++){
+            statfile << systemStates[iii] << endl;
         }
         statfile.close();
 
-        statfile.open("averageLoss.txt");
-        for(int ii=0;ii<nImages;ii++){
-            statfile << averageLoss[ii] << endl;
+        statfile.open("inlierRatios" + to_string(ii) + ".txt");
+        for(int iii=0;iii<nImages;iii++){
+            statfile << inlierRatios[iii] << endl;
         }
         statfile.close();
 
-        statfile.open("nMapPoints.txt");
-        for(int ii=0;ii<nImages;ii++){
-            statfile << nMapPoints[ii] << endl;
+        statfile.open("averageLoss" + to_string(ii) + ".txt");
+        for(int iii=0;iii<nImages;iii++){
+            statfile << averageLoss[iii] << endl;
         }
         statfile.close();
 
-        statfile.open("nStereoPoints.txt");
-        for(int ii=0;ii<nImages;ii++){
-            statfile << nStereoPoints[ii] << endl;
+        statfile.open("nMapPoints" + to_string(ii) + ".txt");
+        for(int iii=0;iii<nImages;iii++){
+            statfile << nMapPoints[iii] << endl;
         }
         statfile.close();
 
-        statfile.open("nCloseStereoPoints.txt");
-        for(int ii=0;ii<nImages;ii++){
-            statfile << nCloseStereoPoints[ii] << endl;
+        statfile.open("nStereoPoints" + to_string(ii) + ".txt");
+        for(int iii=0;iii<nImages;iii++){
+            statfile << nStereoPoints[iii] << endl;
+        }
+        statfile.close();
+
+        statfile.open("nCloseStereoPoints" + to_string(ii) + ".txt");
+        for(int iii=0;iii<nImages;iii++){
+            statfile << nCloseStereoPoints[iii] << endl;
         }
         statfile.close();
 
         // Covisibility Graph Stuff:
-        // std::vector<std::vector<int>> covisibility = SLAM.GetCovisibility();
-        statfile.open("covisibility.txt");
-        for(int ii=0;ii<covisibility.size();ii++){
+        // std::vector<std::vector<int>> covisibility = SLAM->GetCovisibility();
+        statfile.open("covisibility" + to_string(ii) + ".txt");
+        for(int iii=0;iii<covisibility.size();iii++){
             for(int jj=0;jj<covisibility.size();jj++){
-                statfile << covisibility[ii][jj] <<",";
+                statfile << covisibility[iii][jj] <<",";
             }
             statfile << endl;
         }
         statfile.close();
 
         // Number of times the system had to re-extract ORB features to properly work:
-        statfile.open("reExtractions.txt");
-        statfile << SLAM.GetNumResets() << endl;
+        statfile.open("reExtractions" + to_string(ii) + ".txt");
+        statfile << SLAM->GetNumResets() << endl;
         statfile.close();
 
-        SLAM.Reset();
+
+        SLAM->ResetCounters();
+        delete SLAM;
     }
     //Cleanup
-    for(int ii=0;ii<100;ii++){
-        delete frames[ii];
+    for(int iii=0;iii<100;iii++){
+        delete frames[iii];
     }
     return 0;
 }

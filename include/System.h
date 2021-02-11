@@ -101,6 +101,9 @@ public:
     // Initialize the SLAM system. It launches the Local Mapping, Loop Closing and Viewer threads.
     System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor, const bool bUseViewer = true, const int initFr = 0, const string &strSequence = std::string(), const string &strLoadingFile = std::string());
 
+    //Adding a custom destructor since new() is used in the constructor:
+    ~System();
+
     // Proccess the given stereo frame. Images must be synchronized and rectified.
     // Input images: RGB (CV_8UC3) or grayscale (CV_8U). RGB is converted to grayscale.
     // Returns the camera pose (empty if tracking fails).
@@ -197,6 +200,7 @@ public:
     std::vector<Frame*> framePointers;
     int runNumber;
     int frameNumber;
+    void ResetCounters();
 
 private:
 

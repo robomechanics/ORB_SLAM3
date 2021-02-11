@@ -218,6 +218,39 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     Verbose::SetTh(Verbose::VERBOSITY_QUIET);
 
 }
+System::~System(){
+    std::cout << "The System Destructor is running" << endl;
+
+    //join, detach and delete threads
+    mptLocalMapping->join();
+    // mptLocalMapping->detach();
+    delete mptLocalMapping;
+
+    mptLoopClosing->join();
+    // mptLoopClosing->detach();
+    delete mptLoopClosing;
+
+    if(mptViewer){
+        mptViewer->join();
+        // mptViewer->detach();
+        delete mptViewer;
+    }
+
+    // delete objects
+    delete mpVocabulary;
+    delete mpLoopCloser;
+    delete mpLocalMapper;
+    delete mpTracker;
+    delete mpMapDrawer;
+    delete mpFrameDrawer;
+    delete mpAtlas;
+    delete mpKeyFrameDatabase;
+
+    if(mpViewer){
+        delete mpViewer;  
+    }
+        
+}
 
 cv::Mat System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timestamp, const vector<IMU::Point>& vImuMeas, string filename)
 {
@@ -1018,6 +1051,15 @@ std::vector<int> System::GetCovisibility(int size)
 int System::GetNumResets()
 {
     return mpTracker->numResets;
+}
+
+void System::ResetCounters()
+{
+    Map::nNextId = 0;
+    Frame::nNextId = 0;
+    KeyFrame::nNextId = 0;
+    MapPoint::nNextId = 0;
+    GeometricCamera::nNextId = 0;
 }
 
 /*void System::SaveAtlas(int type){
