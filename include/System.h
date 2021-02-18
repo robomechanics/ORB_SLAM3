@@ -200,7 +200,7 @@ public:
     std::vector<Frame*> framePointers;
     int runNumber;
     int frameNumber;
-    void ResetCounters();
+    void ResetObjects();
 
 private:
 

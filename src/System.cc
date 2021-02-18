@@ -1053,13 +1053,27 @@ int System::GetNumResets()
     return mpTracker->numResets;
 }
 
-void System::ResetCounters()
+void System::ResetObjects()
 {
     Map::nNextId = 0;
     Frame::nNextId = 0;
     KeyFrame::nNextId = 0;
     MapPoint::nNextId = 0;
     GeometricCamera::nNextId = 0;
+
+    delete mpVocabulary;
+    mpVocabulary = new
+    delete mpLoopCloser;
+    delete mpLocalMapper;
+    delete mpTracker;
+    delete mpMapDrawer;
+    delete mpFrameDrawer;
+    delete mpAtlas;
+    delete mpKeyFrameDatabase;
+
+    if(mpViewer){
+        delete mpViewer;  
+    }
 }
 
 /*void System::SaveAtlas(int type){

@@ -48,10 +48,11 @@ int main(int argc, char **argv)
     // Storage for frames
     vector<ORB_SLAM3::Frame*> frames;
     frames.resize(nImages);
+    ORB_SLAM3::System* SLAM = new ORB_SLAM3::System(argv[1],argv[2],ORB_SLAM3::System::STEREO,false);
+
     for(int ii=1; ii < 101; ii++){
         // Create SLAM system. It initializes all system threads and gets ready to process frames.
         cout << "Iteration Number: " << ii << endl;
-        ORB_SLAM3::System* SLAM = new ORB_SLAM3::System(argv[1],argv[2],ORB_SLAM3::System::STEREO,false);
         SLAM->runNumber = ii;
         if(ii == 1) SLAM->framePointers.resize(nImages);
         if(ii > 1) SLAM->framePointers = frames;
@@ -115,7 +116,7 @@ int main(int argc, char **argv)
     #else
             std::chrono::monotonic_clock::time_point t1 = std::chrono::monotonic_clock::now();
     #endif
-            
+
             // Pass the images to the SLAM system
             SLAM->TrackStereo(imLeft,imRight,tframe);
 
@@ -243,14 +244,14 @@ int main(int argc, char **argv)
         statfile.close();
 
 
-        SLAM->ResetCounters();
-        delete SLAM;
+        SLAM->ResetObjects();
     }
     //Cleanup
     for(int iii=0;iii<100;iii++){
         delete frames[iii];
     }
     return 0;
+    delete SLAM;
 }
 
 void LoadImages(const string &strPathToSequence, vector<string> &vstrImageLeft,
