@@ -193,6 +193,11 @@ public:
     std::vector<int> GetCovisibility(int size);
     int GetNumResets();
 
+    int numProposedPoints;
+    int numORBMatchedPoints;
+    int numInliers;
+    bool usedVelocity;
+
 private:
 
     //bool LoadAtlas(string filename, int type);

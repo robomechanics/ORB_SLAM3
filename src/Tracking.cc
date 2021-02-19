@@ -999,13 +999,17 @@ void Tracking::Track()
                     {
                         //Verbose::PrintMess("TRACK: Track with respect to the reference KF ", Verbose::VERBOSITY_DEBUG);
                         bOK = TrackReferenceKeyFrame();
+                        mpSystem->usedVelocity = false;
                     }
                     else
                     {
                         //Verbose::PrintMess("TRACK: Track with motion model", Verbose::VERBOSITY_DEBUG);
                         bOK = TrackWithMotionModel();
-                        if(!bOK)
+                        mpSystem->usedVelocity = true;
+                        if(!bOK){
                             bOK = TrackReferenceKeyFrame();
+                            mpSystem->usedVelocity = false;
+                        }
                     }
                     numReExtracts++;  
                 }
@@ -1779,7 +1783,9 @@ bool Tracking::TrackReferenceKeyFrame()
     vector<MapPoint*> vpMapPointMatches;
 
     int nmatches = matcher.SearchByBoW(mpReferenceKF,mCurrentFrame,vpMapPointMatches);
-
+    const vector<MapPoint*> proposedMatches = mpReferenceKF->GetMapPointMatches();
+    mpSystem->numProposedPoints = proposedMatches.size();
+    mpSystem->numORBMatchedPoints = nmatches;
     if(nmatches<15)
     {
         cout << "TRACK_REF_KF: Less than 15 matches!!\n";
@@ -1822,6 +1828,8 @@ bool Tracking::TrackReferenceKeyFrame()
                 nmatchesMap++;
         }
     }
+
+    mpSystem->numInliers = nmatchesMap;
 
     // TODO check these conditions
     if (mSensor == System::IMU_MONOCULAR || mSensor == System::IMU_STEREO)
@@ -1930,7 +1938,8 @@ bool Tracking::TrackWithMotionModel()
         th=15;
 
     int nmatches = matcher.SearchByProjection(mCurrentFrame,mLastFrame,th,mSensor==System::MONOCULAR || mSensor==System::IMU_MONOCULAR);
-
+    mpSystem->numORBMatchedPoints = nmatches;
+    mpSystem->numProposedPoints = mLastFrame.mvpMapPoints.size();
     // If few matches, uses a wider window search
     if(nmatches<20)
     {
@@ -1938,6 +1947,8 @@ bool Tracking::TrackWithMotionModel()
         fill(mCurrentFrame.mvpMapPoints.begin(),mCurrentFrame.mvpMapPoints.end(),static_cast<MapPoint*>(NULL));
 
         nmatches = matcher.SearchByProjection(mCurrentFrame,mLastFrame,2*th,mSensor==System::MONOCULAR || mSensor==System::IMU_MONOCULAR);
+        mpSystem->numORBMatchedPoints = nmatches;
+        mpSystem->numProposedPoints = mLastFrame.mvpMapPoints.size();
         Verbose::PrintMess("Matches with wider search: " + to_string(nmatches), Verbose::VERBOSITY_NORMAL);
 
     }
@@ -1979,6 +1990,9 @@ bool Tracking::TrackWithMotionModel()
                 nmatchesMap++;
         }
     }
+
+    mpSystem->numInliers = nmatchesMap;
+
 
     if(mbOnlyTracking)
     {

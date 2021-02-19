@@ -83,6 +83,16 @@ int main(int argc, char **argv)
     // Covisibility Graph Tracking:
     std::vector<std::vector<int>> covisibility(nImages,std::vector<int>(nImages));
 
+    // Information on features by frame:
+    vector<int> proposedPoints;
+    vector<int> orbMatchedPoints;
+    vector<int> inlierPoints;
+    vector<bool> usedVelocity;
+    proposedPoints.resize(nImages);
+    orbMatchedPoints.resize(nImages);
+    inlierPoints.resize(nImages);
+    usedVelocity.resize(nImages);
+
 
     cout << endl << "-------" << endl;
     cout << "Start processing sequence ..." << endl;
@@ -144,11 +154,17 @@ int main(int argc, char **argv)
         nCloseStereoPoints[ni] = SLAM.GetNCloseStereoPoints();
         nStereoPoints[ni] = SLAM.GetNStereoPoints();
         covisibility[ni] = SLAM.GetCovisibility(nImages);
+
         if(ni>0){
             // GET X/Y Coords for the current step:
             featuresXCoords = SLAM.GetXCoords();
             featuresYCoords = SLAM.GetYCoords();
             featuresZCoords = SLAM.GetZCoords();
+
+            proposedPoints[ni] = SLAM.numProposedPoints;
+            orbMatchedPoints[ni] = SLAM.numORBMatchedPoints;
+            inlierPoints[ni] = SLAM.numInliers;
+            usedVelocity[ni] = SLAM.usedVelocity;
 
             // Output the current x/y coords
             // ofstream statfile;
@@ -235,6 +251,33 @@ int main(int argc, char **argv)
     statfile.open("reExtractions.txt");
     statfile << SLAM.GetNumResets() << endl;
     statfile.close();
+
+
+    // Features by frame stuff:
+    statfile.open("proposedPoints.txt");
+    for(int ii=1;ii<nImages;ii++){
+        statfile << proposedPoints[ii] << endl;
+    }
+    statfile.close();
+
+    statfile.open("orbMatchedPoints.txt");
+    for(int ii=1;ii<nImages;ii++){
+        statfile << orbMatchedPoints[ii] << endl;
+    }
+    statfile.close();
+
+    statfile.open("inlierPoints.txt");
+    for(int ii=1;ii<nImages;ii++){
+        statfile << inlierPoints[ii] << endl;
+    }
+    statfile.close();
+
+    statfile.open("usedVelocity.txt");
+    for(int ii=1;ii<nImages;ii++){
+        statfile << usedVelocity[ii] << endl;
+    }
+    statfile.close();
+
 
     return 0;
 }
