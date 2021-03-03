@@ -988,12 +988,10 @@ void Tracking::Track()
                 //Re-extract ORB data and re-run if not okay
                 bOK = false;
                 int numReExtracts = 0;
-                while(!bOK && numReExtracts <1){ // The magic number here determines how many times feature extraction can be performed at each timestep
+                while(!bOK && numReExtracts <101){
                     if(numReExtracts >0){
                         std::cout << "Attempting to re-extract. Attempt #" << numReExtracts << endl;
                         mCurrentFrame = Frame(mImGray,imGrayRight,currentTimestamp,mpORBextractorLeft,mpORBextractorRight,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth,mpCamera);
-                        nStereoPoints = mCurrentFrame.nStereoPoints;
-                        nCloseStereoPoints = mCurrentFrame.nCloseStereoPoints;
                     }
                     if((mVelocity.empty() && !pCurrentMap->isImuInitialized()) || mCurrentFrame.mnId<mnLastRelocFrameId+2)
                     {
