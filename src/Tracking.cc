@@ -988,10 +988,11 @@ void Tracking::Track()
                 //Re-extract ORB data and re-run if not okay
                 bOK = false;
                 int numReExtracts = 0;
+                Frame origFrame = Frame(mCurrentFrame);
                 while(!bOK && numReExtracts <101){
                     if(numReExtracts >0){
                         std::cout << "Attempting to re-extract. Attempt #" << numReExtracts << endl;
-                        mCurrentFrame = Frame(mImGray,imGrayRight,currentTimestamp,mpORBextractorLeft,mpORBextractorRight,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth,mpCamera);
+                        mCurrentFrame = Frame(origFrame);
                     }
                     if((mVelocity.empty() && !pCurrentMap->isImuInitialized()) || mCurrentFrame.mnId<mnLastRelocFrameId+2)
                     {
