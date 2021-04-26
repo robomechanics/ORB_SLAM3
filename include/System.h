@@ -186,6 +186,8 @@ public:
     vector<float> GetXCoords();
     vector<float> GetYCoords();
     vector<float> GetZCoords();
+    std::vector<std::vector<cv::KeyPoint>> getLeftPoints();
+    std::vector<std::vector<cv::KeyPoint>> getRightPoints();
     long unsigned int MapPointsInMap();
     int GetNStereoPoints();
     int GetNCloseStereoPoints();
@@ -263,6 +265,9 @@ private:
     vector<float> xCoords;
     vector<float> yCoords;
     vector<float> zCoords;
+
+    std::vector<std::vector<cv::KeyPoint>> leftPoints;
+    std::vector<std::vector<cv::KeyPoint>> rightPoints;
 };
 
 }// namespace ORB_SLAM

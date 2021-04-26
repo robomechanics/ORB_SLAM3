@@ -80,6 +80,10 @@ int main(int argc, char **argv)
     vector<float> featuresYCoords;
     vector<float> featuresZCoords;
 
+    // Vectors of vectors of keypoints from various runs
+    std::vector<std::vector<cv::KeyPoint>> leftPoints;
+    std::vector<std::vector<cv::KeyPoint>> rightPoints;
+
     // Covisibility Graph Tracking:
     std::vector<std::vector<int>> covisibility(nImages,std::vector<int>(nImages));
 
@@ -173,6 +177,29 @@ int main(int argc, char **argv)
             //     statfile << featuresXCoords[ii] << "," << featuresYCoords[ii] << "," << featuresZCoords[ii] << endl;
             // }
             // statfile.close();
+
+            // Output the 10 keypoint vectors
+            leftPoints = SLAM.getLeftPoints();
+            rightPoints = SLAM.getRightPoints();
+
+            ofstream statfile;
+            statfile.open("keypointLeftLocations" + to_string(ni) + ".txt");
+            for(int ii=0;ii<leftPoints.size();ii++){
+                for(int jj=0;jj<leftPoints[ii].size();jj++){
+                    statfile << leftPoints[ii][jj].pt << ", ";
+                }
+                statfile << endl;
+            }
+            statfile.close();
+
+            statfile.open("keypointRightLocations" + to_string(ni) + ".txt");
+            for(int ii=0;ii<rightPoints.size();ii++){
+                for(int jj=0;jj<rightPoints[ii].size();jj++){
+                    statfile << rightPoints[ii][jj].pt << ", ";
+                }
+                statfile << endl;
+            }
+            statfile.close();
         }
     }
 

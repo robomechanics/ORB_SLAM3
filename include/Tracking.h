@@ -169,6 +169,9 @@ public:
     vector<float> featuresYCoords;
     vector<float> featuresZCoords;
 
+    std::vector<std::vector<cv::KeyPoint>> leftPoints;
+    std::vector<std::vector<cv::KeyPoint>> rightPoints;
+
     //TEST--
     cv::Mat M1l, M2l;
     cv::Mat M1r, M2r;
