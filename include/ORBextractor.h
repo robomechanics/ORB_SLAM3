@@ -82,6 +82,8 @@ public:
 
     std::vector<cv::Mat> mvImagePyramid;
 
+    bool sortComparator(std::pair<int,ExtractorNode*> a, std::pair<int,ExtractorNode*> b);
+
 protected:
 
     void ComputePyramid(cv::Mat image);

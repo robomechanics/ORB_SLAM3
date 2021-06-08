@@ -996,7 +996,7 @@ void Tracking::Track()
                 rightPoints[0] = mCurrentFrame.mvKeysRight;
 
 
-                while(numReExtracts <10){ // The magic number here determines how many times feature extraction can be performed at each timestep
+                while(numReExtracts <1){ // The magic number here determines how many times feature extraction can be performed at each timestep
                     if(numReExtracts >0){
                         std::cout << "Attempting to re-extract. Attempt #" << numReExtracts << endl;
                         mCurrentFrame = Frame(mImGray,imGrayRight,currentTimestamp,mpORBextractorLeft,mpORBextractorRight,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth,mpCamera);

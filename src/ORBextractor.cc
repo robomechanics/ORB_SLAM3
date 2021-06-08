@@ -679,7 +679,7 @@ namespace ORB_SLAM3
                     vector<pair<int,ExtractorNode*> > vPrevSizeAndPointerToNode = vSizeAndPointerToNode;
                     vSizeAndPointerToNode.clear();
 
-                    sort(vPrevSizeAndPointerToNode.begin(),vPrevSizeAndPointerToNode.end());
+                    stable_sort(vPrevSizeAndPointerToNode.begin(),vPrevSizeAndPointerToNode.end(),[this](pair<int,ExtractorNode*> l, pair<int,ExtractorNode*> r){return sortComparator(l,r); });
                     for(int j=vPrevSizeAndPointerToNode.size()-1;j>=0;j--)
                     {
                         ExtractorNode n1,n2,n3,n4;
@@ -807,6 +807,22 @@ namespace ORB_SLAM3
 
                     FAST(mvImagePyramid[level].rowRange(iniY,maxY).colRange(iniX,maxX),
                          vKeysCell,iniThFAST,true);
+                    // std::cerr<<"Testing to see if FAST() gives consistent output" << endl;
+                    // for(int ii=0; ii<100;ii++){
+                    //     vector<cv::KeyPoint> vKeysCellTEST;
+                    //     FAST(mvImagePyramid[level].rowRange(iniY,maxY).colRange(iniX,maxX),
+                    //      vKeysCellTEST,iniThFAST,true);
+                    //     if(vKeysCell.size() != vKeysCellTEST.size()){
+                    //         std::cerr<<"different number of features" << endl;
+                    //         continue;
+                    //     }
+                    //     for(int jj=0; jj<vKeysCell.size();jj++){
+                    //         if(vKeysCell[jj].pt != vKeysCellTEST[jj].pt){
+                    //             std::cerr<<"Different Point Detected" << endl;
+                    //             break;
+                    //         }
+                    //     }
+                    // }
 
                     /*if(bRight && j <= 13){
                         FAST(mvImagePyramid[level].rowRange(iniY,maxY).colRange(iniX,maxX),
@@ -858,7 +874,24 @@ namespace ORB_SLAM3
 
             keypoints = DistributeOctTree(vToDistributeKeys, minBorderX, maxBorderX,
                                           minBorderY, maxBorderY,mnFeaturesPerLevel[level], level);
+            for(int ijk=0;ijk<10;ijk++){
+                vector<KeyPoint> kpTest;
+                kpTest.reserve(nfeatures);
 
+                kpTest = DistributeOctTree(vToDistributeKeys, minBorderX, maxBorderX,
+                                              minBorderY, maxBorderY,mnFeaturesPerLevel[level], level);
+
+                if(kpTest.size() != keypoints.size()){
+                    std::cerr<<"different number of features" << endl;
+                    continue;
+                }
+                for(int ijk1=0; ijk1<keypoints.size();ijk1++){
+                    if(kpTest[ijk1].pt != keypoints[ijk1].pt){
+                        std::cerr<<"Different Point Detected" << endl;
+                        break;
+                    }
+                }
+            }
             const int scaledPatchSize = PATCH_SIZE*mvScaleFactor[level];
 
             // Add border to coordinates and scale information
@@ -1080,6 +1113,27 @@ namespace ORB_SLAM3
 
         vector < vector<KeyPoint> > allKeypoints;
         ComputeKeyPointsOctTree(allKeypoints);
+        // vector < vector<KeyPoint> > allKeypointsTEST;
+        // std::cout << "Testing if ComputeKeyPointsOctTree is consistent" << endl;
+        // for(int iii=0; iii < 10; iii++){
+        //     ComputeKeyPointsOctTree(allKeypointsTEST);
+        //     if(allKeypointsTEST.size() != allKeypoints.size()){
+        //         std::cerr<< "Different number of vectors" <<endl;
+        //         continue;
+        //     }
+        //     for(int jj=0; jj < allKeypoints.size(); jj++){
+        //         if(allKeypointsTEST[jj].size() != allKeypoints[jj].size()){
+        //             std::cerr<<"Different number of features" <<endl;
+        //             break;
+        //         }
+        //         for(int kk=0;kk < allKeypoints[jj].size();kk++){
+        //             if(allKeypoints[jj][kk].pt != allKeypointsTEST[jj][kk].pt){
+        //                 std::cerr<<"Different point detected!" << endl;
+        //                 break;
+        //             }
+        //         }
+        //     }
+        // }
         //ComputeKeyPointsOld(allKeypoints);
 
         Mat descriptors;
@@ -1174,6 +1228,10 @@ namespace ORB_SLAM3
             }
         }
 
+    }
+
+    bool ORBextractor::sortComparator(std::pair<int,ExtractorNode*> a, std::pair<int,ExtractorNode*> b){
+        return a.first < b.first;
     }
 
 } //namespace ORB_SLAM
