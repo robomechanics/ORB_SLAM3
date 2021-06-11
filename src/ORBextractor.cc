@@ -533,7 +533,7 @@ namespace ORB_SLAM3
             n4.bNoMore = true;
 
     }
-
+    //NOTE TO ME: Just change the max/min x/y values to change the area of feature selection
     vector<cv::KeyPoint> ORBextractor::DistributeOctTree(const vector<cv::KeyPoint>& vToDistributeKeys, const int &minX,
                                                          const int &maxX, const int &minY, const int &maxY, const int &N, const int &level)
     {

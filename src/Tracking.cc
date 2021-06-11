@@ -1932,7 +1932,25 @@ bool Tracking::TrackWithMotionModel()
     }
     else
     {
-        mCurrentFrame.SetPose(mVelocity*mLastFrame.mTcw);
+
+
+
+        // START JOE CHANGES
+        float val = mLastFrame.mTcw.at<float>(1,2);
+        float angle = -asin(val);
+
+        cv::Mat newPose = mLastFrame.mTcw;
+        cv::Mat newPoseRot = newPose.rowRange(0,3).colRange(0,3);
+        newPose.row(2).col(3) = newPose.row(2).col(3) - 0.3;
+
+        cv::Mat rot = (cv::Mat_<float>(3,3) << 1, 0, 0, 0, cos(angle), sin(angle), 0, -1*sin(angle),cos(angle));
+        rot.copyTo(newPoseRot);
+
+        mCurrentFrame.SetPose(newPose);
+
+
+        //STANDARD BEHAVIOR
+        //mCurrentFrame.SetPose(mVelocity*mLastFrame.mTcw);
     }
 
 
