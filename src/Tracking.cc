@@ -52,6 +52,9 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
     mpFrameDrawer(pFrameDrawer), mpMapDrawer(pMapDrawer), mpAtlas(pAtlas), mnLastRelocFrameId(0), time_recently_lost(5.0),
     mnInitialFrameId(0), mbCreatedMap(false), mnFirstFrameId(0), mpCamera2(nullptr)
 {
+    //init framenum
+    frameNum = -1;
+
     // Load camera parameters from settings file
     cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
 
@@ -202,14 +205,15 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
     int nLevels = fSettings["ORBextractor.nLevels"];
     int fIniThFAST = fSettings["ORBextractor.iniThFAST"];
     int fMinThFAST = fSettings["ORBextractor.minThFAST"];
+    int offset = fSettings["ORBextractor.offset"];
 
-    mpORBextractorLeft = new ORBextractor(nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+    mpORBextractorLeft = new ORBextractor(nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST, offset);
 
     if(sensor==System::STEREO || sensor==System::IMU_STEREO)
-        mpORBextractorRight = new ORBextractor(nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+        mpORBextractorRight = new ORBextractor(nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST, offset);
 
     if(sensor==System::MONOCULAR || sensor==System::IMU_MONOCULAR)
-        mpIniORBextractor = new ORBextractor(5*nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST);
+        mpIniORBextractor = new ORBextractor(5*nFeatures,fScaleFactor,nLevels,fIniThFAST,fMinThFAST, offset);
 
     initID = 0; lastID = 0;
 
@@ -350,6 +354,9 @@ void Tracking::SetStepByStep(bool bSet)
 
 cv::Mat Tracking::GrabImageStereo(const cv::Mat &imRectLeft, const cv::Mat &imRectRight, const double &timestamp, string filename)
 {
+    frameNum++;
+    mpORBextractorLeft->extractionNumber = frameNum;
+    mpORBextractorRight->extractionNumber = frameNum;
     mImGray = imRectLeft;
     imGrayRight = imRectRight;
     mImRight = imRectRight;
@@ -1804,18 +1811,18 @@ bool Tracking::TrackReferenceKeyFrame()
     mCurrentFrame.mvpMapPoints = vpMapPointMatches;
 
     // START JOE CHANGES
-    float val = mLastFrame.mTcw.at<float>(1,2);
-    float angle = -asin(val);
+    // float val = mLastFrame.mTcw.at<float>(1,2);
+    // float angle = -asin(val);
 
-    cv::Mat newPose = mLastFrame.mTcw;
-    cv::Mat newPoseRot = newPose.rowRange(0,3).colRange(0,3);
-    newPose.row(2).col(3) = newPose.row(2).col(3) - 0.3;
+    // cv::Mat newPose = mLastFrame.mTcw;
+    // cv::Mat newPoseRot = newPose.rowRange(0,3).colRange(0,3);
+    // newPose.row(2).col(3) = newPose.row(2).col(3) - 0.3;
 
-    cv::Mat rot = (cv::Mat_<float>(3,3) << 1, 0, 0, 0, cos(angle), sin(angle), 0, -1*sin(angle),cos(angle));
-    rot.copyTo(newPoseRot);
+    // cv::Mat rot = (cv::Mat_<float>(3,3) << 1, 0, 0, 0, cos(angle), sin(angle), 0, -1*sin(angle),cos(angle));
+    // rot.copyTo(newPoseRot);
 
-    mCurrentFrame.SetPose(newPose);
-    //mCurrentFrame.SetPose(mLastFrame.mTcw);
+    // mCurrentFrame.SetPose(newPose);
+    mCurrentFrame.SetPose(mLastFrame.mTcw);
 
     //mCurrentFrame.PrintPointDistribution();
 

@@ -406,10 +406,11 @@ namespace ORB_SLAM3
             };
 
     ORBextractor::ORBextractor(int _nfeatures, float _scaleFactor, int _nlevels,
-                               int _iniThFAST, int _minThFAST):
+                               int _iniThFAST, int _minThFAST, int _offset):
             nfeatures(_nfeatures), scaleFactor(_scaleFactor), nlevels(_nlevels),
-            iniThFAST(_iniThFAST), minThFAST(_minThFAST)
+            iniThFAST(_iniThFAST), minThFAST(_minThFAST), offset(_offset)
     {
+        extractionNumber = 0;
         mvScaleFactor.resize(nlevels);
         mvLevelSigma2.resize(nlevels);
         mvScaleFactor[0]=1.0f;
@@ -564,6 +565,9 @@ namespace ORB_SLAM3
         for(size_t i=0;i<vToDistributeKeys.size();i++)
         {
             const cv::KeyPoint &kp = vToDistributeKeys[i];
+            // cout << "OFFSET: " << offset << endl;
+            // if(extractionNumber%2 && kp.pt.y > maxY-offset) continue;
+            // if(!extractionNumber%2 && kp.pt.y < offset) continue;
             vpIniNodes[kp.pt.x/hX]->vKeys.push_back(kp);
         }
 
@@ -753,7 +757,9 @@ namespace ORB_SLAM3
                     maxResponse = vNodeKeys[k].response;
                 }
             }
-
+            //JULYTODO: This is where I would be able to label results as top/bot/mid
+            if(extractionNumber%2 && pKP->pt.y > maxY-offset) continue;
+            if(!extractionNumber%2 && pKP->pt.y < offset) continue;
             vResultKeys.push_back(*pKP);
         }
 
@@ -874,24 +880,24 @@ namespace ORB_SLAM3
 
             keypoints = DistributeOctTree(vToDistributeKeys, minBorderX, maxBorderX,
                                           minBorderY, maxBorderY,mnFeaturesPerLevel[level], level);
-            for(int ijk=0;ijk<10;ijk++){
-                vector<KeyPoint> kpTest;
-                kpTest.reserve(nfeatures);
+            // for(int ijk=0;ijk<10;ijk++){
+            //     vector<KeyPoint> kpTest;
+            //     kpTest.reserve(nfeatures);
 
-                kpTest = DistributeOctTree(vToDistributeKeys, minBorderX, maxBorderX,
-                                              minBorderY, maxBorderY,mnFeaturesPerLevel[level], level);
+            //     kpTest = DistributeOctTree(vToDistributeKeys, minBorderX, maxBorderX,
+            //                                   minBorderY, maxBorderY,mnFeaturesPerLevel[level], level);
 
-                if(kpTest.size() != keypoints.size()){
-                    std::cerr<<"different number of features" << endl;
-                    continue;
-                }
-                for(int ijk1=0; ijk1<keypoints.size();ijk1++){
-                    if(kpTest[ijk1].pt != keypoints[ijk1].pt){
-                        std::cerr<<"Different Point Detected" << endl;
-                        break;
-                    }
-                }
-            }
+            //     if(kpTest.size() != keypoints.size()){
+            //         std::cerr<<"different number of features" << endl;
+            //         continue;
+            //     }
+            //     for(int ijk1=0; ijk1<keypoints.size();ijk1++){
+            //         if(kpTest[ijk1].pt != keypoints[ijk1].pt){
+            //             std::cerr<<"Different Point Detected" << endl;
+            //             break;
+            //         }
+            //     }
+            // }
             const int scaledPatchSize = PATCH_SIZE*mvScaleFactor[level];
 
             // Add border to coordinates and scale information
@@ -1092,6 +1098,7 @@ namespace ORB_SLAM3
     static void computeDescriptors(const Mat& image, vector<KeyPoint>& keypoints, Mat& descriptors,
                                    const vector<Point>& pattern)
     {
+        //JULYTODO: This could be a place to split out up/down/mid/all descriptors based on a property of keypoints
         descriptors = Mat::zeros((int)keypoints.size(), 32, CV_8UC1);
 
         for (size_t i = 0; i < keypoints.size(); i++)
@@ -1153,7 +1160,7 @@ namespace ORB_SLAM3
         //_keypoints.reserve(nkeypoints);
         _keypoints = vector<cv::KeyPoint>(nkeypoints);
 
-        int offset = 0;
+        int offsetORIG = 0;
         //Modified for speeding up stereo fisheye matching
         int monoIndex = 0, stereoIndex = nkeypoints-1;
         for (int level = 0; level < nlevels; ++level)
@@ -1173,7 +1180,7 @@ namespace ORB_SLAM3
             Mat desc = cv::Mat(nkeypointsLevel, 32, CV_8U);
             computeDescriptors(workingMat, keypoints, desc, pattern);
 
-            offset += nkeypointsLevel;
+            offsetORIG += nkeypointsLevel;
 
 
             float scale = mvScaleFactor[level]; //getScale(level, firstLevel, scaleFactor);

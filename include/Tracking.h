@@ -340,6 +340,9 @@ protected:
 
     cv::Mat mTlr;
 
+    //new var just to track frame #:
+    int frameNum;
+
 public:
     cv::Mat mImRight;
 };

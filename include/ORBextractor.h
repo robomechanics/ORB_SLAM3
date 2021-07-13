@@ -47,7 +47,7 @@ public:
     enum {HARRIS_SCORE=0, FAST_SCORE=1 };
 
     ORBextractor(int nfeatures, float scaleFactor, int nlevels,
-                 int iniThFAST, int minThFAST);
+                 int iniThFAST, int minThFAST, int offset);
 
     ~ORBextractor(){}
 
@@ -84,6 +84,8 @@ public:
 
     bool sortComparator(std::pair<int,ExtractorNode*> a, std::pair<int,ExtractorNode*> b);
 
+    int extractionNumber;
+
 protected:
 
     void ComputePyramid(cv::Mat image);
@@ -99,6 +101,11 @@ protected:
     int nlevels;
     int iniThFAST;
     int minThFAST;
+
+    //New stuff to do smaller areas of extraction.
+    int offset;
+    
+
 
     std::vector<int> mnFeaturesPerLevel;
 
